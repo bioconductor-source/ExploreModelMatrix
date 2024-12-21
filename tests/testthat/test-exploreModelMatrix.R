@@ -7,17 +7,29 @@ test_that("ExploreModelMatrix fails with incorrect inputs", {
   designFormula <- ~genotype
 
   expect_error(ExploreModelMatrix(sampleData = 1,
-                                  designFormula = designFormula))
+                                  designFormula = designFormula),
+               "must be a data.frame")
   expect_error(ExploreModelMatrix(sampleData = as.matrix(sampleData),
-                                  designFormula = designFormula))
+                                  designFormula = designFormula),
+               "must be a data.frame")
   expect_error(ExploreModelMatrix(sampleData = as.list(sampleData),
-                                  designFormula = designFormula))
+                                  designFormula = designFormula),
+               "must be a data.frame")
   expect_error(ExploreModelMatrix(sampleData = sampleData,
-                                  designFormula = "~genotype"))
+                                  designFormula = "~genotype"),
+               "must be a formula")
+  expect_error(ExploreModelMatrix(sampleData = sampleData,
+                                  designFormula = designFormula,
+                                  addStopButton = 1),
+               "must be a logical scalar")
+  expect_error(ExploreModelMatrix(sampleData = sampleData,
+                                  designFormula = designFormula,
+                                  addStopButton = c(TRUE, FALSE)),
+               "must be a logical scalar")
   sampleData[1, 1] <- NA
   expect_error(ExploreModelMatrix(sampleData = sampleData,
                                   designFormula = designFormula),
-               regex = "can not contain NA values")
+               "can not contain NA values")
 })
 
 test_that("ExploreModelMatrix generates a shiny app object", {

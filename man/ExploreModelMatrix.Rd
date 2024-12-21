@@ -4,7 +4,11 @@
 \alias{ExploreModelMatrix}
 \title{Explore model matrix}
 \usage{
-ExploreModelMatrix(sampleData = NULL, designFormula = NULL)
+ExploreModelMatrix(
+  sampleData = NULL,
+  designFormula = NULL,
+  addStopButton = TRUE
+)
 }
 \arguments{
 \item{sampleData}{(optional) A \code{data.frame} or \code{DataFrame}
@@ -15,6 +19,9 @@ choose among a collection of example designs provided in the app.}
 \item{designFormula}{(optional) A \code{formula}. All components of
 the terms must be present as columns in \code{sampleData}. If set to
 \code{NULL}, the design formula can be specified after launching the app.}
+
+\item{addStopButton}{Logical scalar. If \code{TRUE} (default), will add a
+button to stop the app (by calling \code{shiny::stopApp}).}
 }
 \value{
 A Shiny app object

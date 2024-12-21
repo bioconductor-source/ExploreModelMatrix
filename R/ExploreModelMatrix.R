@@ -11,6 +11,8 @@
 #' @param designFormula (optional) A \code{formula}. All components of
 #'   the terms must be present as columns in \code{sampleData}. If set to
 #'   \code{NULL}, the design formula can be specified after launching the app.
+#' @param addStopButton Logical scalar. If \code{TRUE} (default), will add a
+#'   button to stop the app (by calling \code{shiny::stopApp}).
 #'
 #' @author Charlotte Soneson, Federico Marini, Michael I Love, Florian Geier,
 #'   Michael B Stadler
@@ -52,7 +54,8 @@
 #' @importFrom S4Vectors DataFrame
 #' @importFrom shinyjs useShinyjs onclick
 #'
-ExploreModelMatrix <- function(sampleData = NULL, designFormula = NULL) {
+ExploreModelMatrix <- function(sampleData = NULL, designFormula = NULL,
+                               addStopButton = TRUE) {
 
   # Check input arguments -----------------------------------------------------
   if (!is.null(sampleData) && !(methods::is(sampleData, "data.frame") ||
@@ -70,6 +73,10 @@ ExploreModelMatrix <- function(sampleData = NULL, designFormula = NULL) {
 
   if (any(is.na(sampleData))) {
     stop("'sampleData' can not contain NA values")
+  }
+
+  if (!is.logical(addStopButton) || length(addStopButton) != 1) {
+    stop("'addStopButton' must be a logical scalar")
   }
 
   lmText <- shiny::span(
@@ -128,7 +135,7 @@ ExploreModelMatrix <- function(sampleData = NULL, designFormula = NULL) {
 
         shiny::uiOutput("ui_settings"),
 
-        shiny::actionButton("close_app", "Close app")
+        shiny::uiOutput("close_app_ui")
       ),
 
       # Body definition -----------------------------------------------------
@@ -1106,6 +1113,13 @@ ExploreModelMatrix <- function(sampleData = NULL, designFormula = NULL) {
     })
 
     # Close and return ------------------------------------------------------
+    output$close_app_ui <- shiny::renderUI({
+      if (addStopButton) {
+        shiny::actionButton("close_app", "Close app")
+      } else {
+        NULL
+      }
+    })
     observeEvent(input$close_app, {
       shiny::stopApp(returnValue = generated_output())
     })
