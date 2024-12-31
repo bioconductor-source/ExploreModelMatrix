@@ -8,6 +8,9 @@ test_that("VisualizeDesign fails with incorrect inputs", {
   )
   designFormula <- ~genotype
 
+  sampleDataNA <- sampleData
+  sampleDataNA$genotype[1] <- NA
+
   expect_error(VisualizeDesign(sampleData = 0,
                                designFormula = designFormula,
                                flipCoordFitted = FALSE, textSizeFitted = 5,
@@ -23,6 +26,10 @@ test_that("VisualizeDesign fails with incorrect inputs", {
                                flipCoordFitted = FALSE, textSizeFitted = 5,
                                textSizeLabsFitted = 12, lineWidthFitted = 25,
                                dropCols = NULL))
+
+  expect_error(VisualizeDesign(sampleData = sampleDataNA,
+                               designFormula = designFormula),
+               "The sample data frame should not contain NA values")
 
   expect_error(VisualizeDesign(sampleData = sampleData,
                                designFormula = TRUE,
@@ -237,6 +244,23 @@ test_that("VisualizeDesign works with intercept", {
   expect_equal(colnames(res), c("genotype", "value", "nSamples"))
 
   res0 <- VisualizeDesign(sampleData = sampleData,
+                          designFormula = ~genotype,
+                          flipCoordFitted = TRUE,
+                          flipCoordCoocc = TRUE,
+                          addColorFitted = FALSE)
+  res <- res0$sampledata
+
+  expect_equal(res0$totnbrrows, 1L)
+  expect_equal(nrow(res0$designmatrix), 8L)
+  expect_equal(ncol(res0$designmatrix), 2L)
+  expect_equivalent(res0$designmatrix[, "(Intercept)"], rep(1L, 8L))
+  expect_equivalent(res0$designmatrix[, "genotypeB"], rep(c(0L, 1L), each = 4))
+  expect_equal(res$value[res$genotype == "A"], "(Intercept)")
+  expect_equal(res$value[res$genotype == "B"], "(Intercept) + genotypeB")
+  expect_equal(nrow(res), 2L)
+  expect_equal(colnames(res), c("genotype", "value", "nSamples"))
+
+  res0 <- VisualizeDesign(sampleData = sampleData,
                           designFormula = ~genotype + treatment)
   res <- res0$sampledata
 
@@ -382,6 +406,11 @@ test_that("VisualizeDesign works with design matrix input", {
     treatment = rep(c("trt", "ctrl"), 4),
     stringsAsFactors = FALSE
   )
+  dm <- model.matrix(~0 + genotype, data = sampleData)
+  rownames(dm) <- paste0("R", seq_len(nrow(dm)))
+  expect_error(VisualizeDesign(sampleData = sampleData %>% dplyr::select(genotype),
+                               designMatrix = dm),
+               "must have the same row names")
 
   res0 <- VisualizeDesign(sampleData = sampleData %>% dplyr::select(genotype),
                           designFormula = NULL,
