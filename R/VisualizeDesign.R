@@ -345,9 +345,15 @@ VisualizeDesign <- function(sampleData, designFormula = NULL,
                                 seq_len(length(unique(
                                   sampleData[[plot_terms[2]]])) - 1))
       } else {
-        gg <- gg + theme(axis.text.x = element_blank(),
-                         axis.title.x = element_blank(),
-                         axis.ticks.x = element_blank())
+        if (flipCoordFitted) {
+          gg <- gg + theme(axis.text.y = element_blank(),
+                           axis.title.y = element_blank(),
+                           axis.ticks.y = element_blank())
+        } else {
+          gg <- gg + theme(axis.text.x = element_blank(),
+                           axis.title.x = element_blank(),
+                           axis.ticks.x = element_blank())
+        }
       }
       gg <- gg + ggplot2::ggtitle(w$groupby[1])
       if (flipCoordFitted) {
@@ -394,9 +400,15 @@ VisualizeDesign <- function(sampleData, designFormula = NULL,
           limits = c(0, maxN)) +
         ggplot2::ggtitle(w$groupby[1])
       if (length(plot_terms) == 1) {
-        gp <- gp + theme(axis.text.x = element_blank(),
-                         axis.title.x = element_blank(),
-                         axis.ticks.x = element_blank())
+        if (flipCoordCoocc) {
+          gp <- gp + theme(axis.text.y = element_blank(),
+                           axis.title.y = element_blank(),
+                           axis.ticks.y = element_blank())
+        } else {
+          gp <- gp + theme(axis.text.x = element_blank(),
+                           axis.title.x = element_blank(),
+                           axis.ticks.x = element_blank())
+        }
       }
       if (flipCoordCoocc) {
         gp <- gp + ggplot2::coord_flip()
